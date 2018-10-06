@@ -1,0 +1,336 @@
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit; }
+
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+  display: block; }
+
+html, body {
+  height: 100%; }
+
+html {
+  font-size: 62.5%;
+  font-family: sans-serif;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%; }
+
+body {
+  font-size: 1.2rem;
+  line-height: 1; }
+
+ol, ul {
+  list-style: none; }
+
+blockquote, q {
+  quotes: none; }
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: '';
+  content: none; }
+
+*, *:after, *:before {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
+
+.hidden {
+  display: none; }
+
+audio,
+canvas,
+progress,
+video {
+  display: inline-block;
+  /* 1 */
+  vertical-align: baseline;
+  /* 2 */ }
+
+audio:not([controls]) {
+  display: none;
+  height: 0; }
+
+[hidden],
+template {
+  display: none; }
+
+a {
+  background-color: transparent; }
+
+a:active,
+a:hover {
+  outline: 0; }
+
+abbr[title] {
+  border-bottom: 1px dotted; }
+
+b,
+strong {
+  font-weight: bold; }
+
+dfn {
+  font-style: italic; }
+
+/*
+h1 {
+  font-size: 2em;
+  margin: 0.67em 0;
+}
+*/
+mark {
+  background: #ff0;
+  color: #000; }
+
+small {
+  font-size: 80%; }
+
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline; }
+
+sup {
+  top: -0.5em; }
+
+sub {
+  bottom: -0.25em; }
+
+img {
+  border: 0; }
+
+svg:not(:root) {
+  overflow: hidden; }
+
+figure {
+  margin: 1em 40px; }
+
+hr {
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  height: 0; }
+
+pre {
+  overflow: auto; }
+
+code,
+kbd,
+pre,
+samp {
+  font-family: monospace, monospace;
+  font-size: 1em; }
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  color: inherit;
+  font: inherit;
+  margin: 0; }
+
+button {
+  overflow: visible; }
+
+button,
+select {
+  text-transform: none; }
+
+button,
+html input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+  -webkit-appearance: button;
+  cursor: pointer; }
+
+button[disabled],
+html input[disabled] {
+  cursor: default; }
+
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+  border: 0;
+  padding: 0; }
+
+input {
+  line-height: normal; }
+
+input[type="checkbox"],
+input[type="radio"] {
+  box-sizing: border-box;
+  padding: 0; }
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  height: auto; }
+
+input[type="search"] {
+  -webkit-appearance: textfield;
+  -moz-box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  box-sizing: content-box; }
+
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none; }
+
+fieldset {
+  border: 1px solid #c0c0c0;
+  margin: 0 2px;
+  padding: 0.35em 0.625em 0.75em; }
+
+legend {
+  border: 0;
+  padding: 0; }
+
+textarea {
+  overflow: auto; }
+
+optgroup {
+  font-weight: bold; }
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0; }
+
+td,
+th {
+  padding: 0; }
+
+html {
+  font-size: 62.5%; }
+
+body {
+  font-size: 1.6em;
+  font-size: 1.6rem;
+  line-height: 1.4;
+  font-weight: 400;
+  font-family: "Signika Negative", Helvetica, Arial, sans-serif;
+  color: #000000;
+  background: #ffffff; }
+
+h1, h2, h3, h4, h5, h6 {
+  margin-bottom: 1rem;
+  font-weight: 600;
+  line-height: 1.6; }
+  h1 strong, h2 strong, h3 strong, h4 strong, h5 strong, h6 strong {
+    font-weight: 600; }
+
+h1 {
+  font-size: 2.8rem;
+  letter-spacing: 0.02rem; }
+
+h2 {
+  font-size: 2.6rem;
+  letter-spacing: 0.03rem; }
+
+h3 {
+  font-size: 2.4rem;
+  letter-spacing: 0.01rem; }
+
+p {
+  margin-bottom: 1.6rem; }
+
+.container {
+  position: relative;
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 0 2rem; }
+  .container::after {
+    content: none;
+    display: none; }
+  .container.padded {
+    padding-top: 6rem;
+    padding-bottom: 6rem; }
+
+a {
+  outline: 0 none;
+  text-decoration: none;
+  transition: all 0.3s ease-in-out 0s;
+  color: #f6b33c; }
+  a:hover {
+    color: #f4a00b; }
+
+img:not(.nav-img) {
+  width: 100%;
+  height: auto;
+  margin-bottom: 2rem; }
+
+body {
+  display: flex;
+  flex-direction: column; }
+
+h1 {
+  margin: 0;
+  padding: 2rem 0;
+  text-align: center; }
+
+footer a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0; }
+  footer a img {
+    margin-right: 1rem; }
+
+#calculator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0; }
+
+form {
+  max-width: 60rem;
+  max-height: 65rem;
+  width: 100%;
+  height: 100%;
+  box-shadow: 0 0 4rem rgba(0, 0, 0, 0.14);
+  font-size: 2rem; }
+  form input {
+    min-height: 7.5rem;
+    width: 100%;
+    padding: 1rem;
+    background-color: #000000;
+    color: #89d038;
+    border: none;
+    font-family: "Orbitron", sans-serif;
+    font-size: 4rem;
+    letter-spacing: .5rem; }
+  form .row {
+    display: flex;
+    border-top: 1px solid gainsboro; }
+    form .row > button {
+      border: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 5rem;
+      width: 100%;
+      height: 100%;
+      background-color: #f5f5f5;
+      color: #000000;
+      border-right: 1px solid gainsboro;
+      cursor: pointer;
+      transition: all ease-in-out .3s; }
+      form .row > button[disabled] {
+        background-color: gainsboro;
+        color: #c2c2c2; }
+      form .row > button.operator {
+        background-color: #f6b33c;
+        color: #ffffff; }
+      form .row > button:focus {
+        background-color: #c2c2c2;
+        outline: none; }
+      form .row > button.operator:focus {
+        background-color: #f4a00b; }
+  form #zero {
+    flex-basis: 200%; }
+
+/*# sourceMappingURL=style.css.map */
