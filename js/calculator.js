@@ -1,72 +1,18 @@
 'use strict';
 
-/*
-to do:
-
- - use object to store values, not data-attrs
-    - better not to manipulate the DOM unless I really need to
-    https://developer.mozilla.org/en-US/docs/Learn/HTML/Howto/Use_data_attributes#Issues
-
- - decimals with leading zeros error - how can I replicate this?
-    multiple 0s before . ?
-
- - take keyboard input
- - make large numbers fit on the display (shrink font size)
-    - make number fit on the display
-     - if overflows, shrink font size to fit
-     - also needs to be done on =, separate function + event listener required
-
-
-
-- - - - 
- done:
-
- - / * + prepended to display.value when starting at 0
-
- - delete button (delete number from right hand side)
-
- - use - button to start with -ve number
-
- - handle infinity, e.g. 9/0
- 
- - handle Nan
-    occurs when starting with operator followed by a number
-    also operator followed by = NOTE: this is just further down the chain, prevent data-operator from getting added first
-    /* <number> = 0
-    +- <number> = +- <number>
-
-
- - +/- button
-    handle 0 values or not
-
- - find an alternative to using count variable (used an object instead)
- - calc function not reliable - try 20.99 + 0.02 Does not = 21.01
-    https://stackoverflow.com/questions/13077923/how-can-i-convert-a-string-into-a-math-operator-in-javascript
-    https://stackoverflow.com/questions/1458633/how-to-deal-with-floating-point-number-precision-in-javascript
-
-
- - getTotal still doesn't work
-    2.3 - 3 = -0.77777777777777777772 ffs
-    - try ends in any digit recurring
-    - seems to affect -ve answers
-
- - <number> subtract <decimal starting with .5 NOT 0.5> does not work
- - <number> subtract <decimal starting with number, e.g. 5.5> does not work (only subtracts .5) 
-    not pressing firmly enough? is this really why?
- 
-
-*/
-
-
-// count - number of digits currently entered in the display textarea
-// - resets to 0 on clear, and after operation button click
-// let count = 0;
+// c object
+// - .ount = number of digits entered in the display textarea.
+//      - Resets to 0 on clear, and after operation button click
+// - convert operator string to function
+// - save the running total and latest operator as strings for calculations
 const c = {
     ount : 0,
     '+': (x, y) => { return x + y },
     '-': (x, y) => { return x - y },
     '*': (x, y) => { return x * y },
-    '/': (x, y) => { return x / y }
+    '/': (x, y) => { return x / y },
+    total : '',
+    operator : '',
 }
 
 
@@ -75,14 +21,21 @@ const c = {
 
 // clear
 const clearCalc = (e) => {
+
+    // keyboard input
+    // - filter out all keyboard input that is not required
+    if (e.type=='keydown' && (e.shiftKey===false&&e.metaKey===false) ) return false;
+    if (e.type=='keydown' && e.keyCode!==82) return false;
+
     const display = document.getElementById('display');
+    const clearBtn = document.getElementById('clear');
     if (e!==undefined) {
         e.preventDefault();
-        e.target.textContent = 'AC';
+        clearBtn.textContent = 'AC';
     }
     display.value = '';
-    display.dataset.total = '';
-    display.dataset.operator = '';
+    c.total = '';
+    c.operator = '';
     // reset count to 0
     c.ount = 0;
 }
@@ -94,25 +47,23 @@ const clearCalc = (e) => {
 const makeNumber = (e) => {
     e.preventDefault();
 
+    const keyID = e.keyCode-48; // convert to 0-9
+    // - filter out all keyboard input that is not required (non 0-9 and .)
+    if (e.shiftKey===true||e.metaKey===true) return false;
+    if (e.type=='keydown' && (keyID<0 || keyID>9 && keyID!==142)) return false;
+
     const display = document.getElementById('display');
-    
-    // keyboard input
-    const tapped = e.keyCode-48;
-
-    // numbers 0-9 || 142
-    const keyID = tapped.toString();
-    let keyNum, keyDec;
-    if (keyID.length === 1) {
-        keyNum = parseInt(keyID);
-    }
-    else if (keyID === '142') {
-        keyDec = true;
-    }
-
-    const number = parseInt(e.target.textContent) || keyNum;
-    const decimal = e.target.textContent == '.' || keyDec;
     const hasDec = display.value.includes('.');
-    
+    let number, decimal;
+
+    // handle keyboard and click inputs
+    if (e.type == 'keydown') {
+        if (keyID.toString().length === 1) number = parseInt(keyID);
+        if (keyID === 142) decimal = true;
+    } else if (e.type == 'click') {
+        number = parseInt(e.target.textContent);
+        if (e.target.textContent == '.') decimal = true;
+    }    
 
     // clear display
     if (c.ount == 0) display.value = '';
@@ -138,6 +89,25 @@ const makeNumber = (e) => {
 const performOperation = (e) => {
     e.preventDefault();
 
+    // keyboard input
+    // - filter out all keyboard input that is not required
+    if (e.type=='keydown' && (e.shiftKey===false&&e.metaKey===false) ) return false;    
+    // keycodes are: 191/ 56* 189- 187+
+    if (e.keyCode!==undefined && (e.keyCode!==191&&e.keyCode!==56&&e.keyCode!==189&&e.keyCode!==187) ) return false;
+
+    // convert keyCode to operator
+    const Kc = e.keyCode;
+    const findOp = {
+        187: '+',
+        189: '-',
+        56: '*',
+        191: '/'
+    }
+
+    // handle keyboard and click inputs
+    // - makes sure operator from keypress isn't picked up from the DOM
+    const myOp = (findOp[Kc]===undefined) ? e.target.textContent : findOp[Kc];
+
     const display = document.getElementById('display');
 
     /*
@@ -146,49 +116,49 @@ const performOperation = (e) => {
         - save operator
 
         2nd click +:
-        - return (data-total data-operator display.value)
-        - add result to display and update data-total
-        - add operator to data-operator
+        - return (c.total c.operator display.value)
+        - add result to display and update c.total
+        - add operator to c.operator
     */
 
     // 1st click of (- + / *)
-    // - before anything saved to data-total
-    if (display.dataset.total.length===0) {
+    // - before anything saved to c.total
+    if (c.total.length===0) {
 
         // start from 0 (no values entered)
         // - allow -ve number to be entered with -ve button
         if (display.value.length===0) {
-            if (e.target.textContent=='-') {
-                display.dataset.operator = e.target.textContent;
+            if (e.target.textContent=='-'||e.keyCode===189) {
+                c.operator = '-'; // e.target.textContent
             } else {
-                display.dataset.operator = '';
+                c.operator = '';
             }
         }
 
         // 1+ digit in display.value
         else {
             // -ve button clicked last
-            if (display.dataset.operator.length>0) {
-                // produces a -- in data-total
+            if (c.operator.length>0) {
                 getTotal();
-                display.dataset.operator = e.target.textContent;
+                c.operator = myOp;
             }
-            // else, update data-total and data-operator
+            // else, update c.total and c.operator
             else {
-                display.dataset.total = display.value;
-                display.dataset.operator = e.target.textContent;
+                c.total = display.value;
+                c.operator = myOp;
             }
         }
 
     }
 
     // 2nd click +
-    else if (display.dataset.total.length > 0) {
-
+    else if (c.total.length>0) {
+        
         // run getTotal if c.ount>0
         if (c.ount>0) getTotal();
-        // save operator value
-        display.dataset.operator = e.target.textContent;
+        // update c.total and c.operator
+        c.total = display.value;
+        c.operator = myOp;
     }
     
     // reset count
@@ -206,29 +176,30 @@ const getTotal = (e) => {
     // fired by = button and perform operation
     const display = document.getElementById('display');
 
-    // NOTE - operators return undefined
+    // NOTE - operators (from performOperation) return undefined
 
     // = button
     if (e!==undefined) {
         e.preventDefault();
+        // - filter out all keyboard input that is not required
+        if (e.type=='keydown' && e.keyCode!==13) return false;
     }
 
     // do the calculation:
 
     // get operator
-    const operator = display.dataset.operator;
+    const operator = c.operator;
 
     // get values, then convert from strings to floats
-    const val1 = parseFloat(display.dataset.total);
-    const val2 = parseFloat(display.value);
-  
+    const val1 = parseFloat(c.total);
+    const val2 = parseFloat(display.value);  
     
-    // handle -ve button and empty data-total (val1)
+    // handle -ve button and empty c.total (val1)
     if (!val1) {
 
         if (operator.length>0) {
 
-            let multDiv = /\*|\//;
+            let multDiv = /\*|\//; // * or /
             multDiv = multDiv.test(operator);
             let neg = /-/;
             neg = neg.test(operator);
@@ -236,45 +207,43 @@ const getTotal = (e) => {
             // return 0
             if (multDiv === true) {
                 display.value = 0;
-                display.dataset.total = 0;
+                c.total = 0;
             }
             // return -ve
+            // - if display.value begins with -ve, remove -ve from op and display
             else if (neg === true) {
                 display.value = `${operator}${display.value}`;
-                display.dataset.total = display.value;
+                c.total = display.value;
             }
             
         }
-
-        // no data-operator
-        // else {
-        //     console.log('= clicked, no data-operator');
-        // }
 
     }
 
     else if (operator.length>0) {
         // perform operation, use precisionRound to round to 12 points
-        // - stops native maths from being weird and 0.1 + 0.2 from being 0.3111112 or whatever
+        // - stops native maths from producing errors
         let newTotal = precisionRound(c[operator](val1, val2), 12);
         if(isNaN(newTotal)||newTotal===Infinity) newTotal='Not a number';
 
         // update with new total
         display.value = `${newTotal}`;
-        display.dataset.total = newTotal;
+        c.total = newTotal;
     }
 
-    // Clear dataset AFTER above calculations if = button clicked
+    // Clear c.total and c.operator AFTER above calculations if = button clicked
     // - required for performOperation to work correctly
     // - i.e. < = button> <operator button> clicked in succession
     if (e!==undefined) {
-        display.dataset.total = '';
-        display.dataset.operator = '';
+        c.total = '';
+        c.operator = '';
     }
     
 }
 
-// precision round. Handles stuff like 0.1 + 0.2 and 20.99 + 0.02
+// precision round function
+// - handles stuff like 0.1 + 0.2 = 0.33 and 20.99 + 0.02 = 21.009999999999998
+// - corrects native js rounding errors
 const precisionRound = (number, precision) => {
     const factor = Math.pow(10, precision);
     return Math.round(number * factor) / factor;
@@ -282,20 +251,26 @@ const precisionRound = (number, precision) => {
 
 
 
-// invert total
-// +/- button - inverts the calculated total, NOT the last entered operator
+// invert total (+/- button)
 const invertTotal = (e) => {
     e.preventDefault();
     const display = document.getElementById('display');
 
     // prevent inverting values of 0:
-    if (parseFloat(display.value)===0||-0) return;
+    if (parseFloat(display.value)===0||-0) return false;
 
     if (display.value.length > 0) {
-        let isNeg = /^-/;
-        isNeg = isNeg.test(display.value);
-        if (isNeg == false) display.value = display.value.replace (/^/,'-');
-        if (isNeg == true) display.value = display.value.replace (/^-/,'');
+        // if display or operator = -ve
+        const isNeg = /^-/;
+        const negNum = isNeg.test(display.value);
+        const negOp = isNeg.test(c.operator);
+
+        // +ve number
+        if (negNum===false && negOp===false) display.value = display.value.replace (/^/,'-');
+        if (negNum===false && negOp===true) c.operator = '';
+        
+        // -ve number
+        if (negNum===true) display.value = display.value.replace (/^-/,'');
     }
 
 }
@@ -309,25 +284,18 @@ const invertTotal = (e) => {
 const backSpace = (e) => {
     e.preventDefault();
 
-    // console.log(e);
-    
-    // console.log(e.keyCode);
-    // console.log(e.target.id);
-    let delBtn = /delete/;
-    delBtn = delBtn.test(e.target.id);
-    // console.log(delBtn);
-
-
-    // if (e.keyCode!==8 || delBtn===false) return false;
-    // if (e.keyCode!==8) return false;
-    // if (delBtn===false) return false;
+    // backspace button only - keypress only applies to keys that produce a character value
+    // - filter out all keyboard input that is not required
+    if (e.shiftKey===true||e.metaKey===true) return false;
+    if (e.type=='keydown' && e.keyCode!==8) return false;
 
     const display = document.getElementById('display');
     if (display.value.length > 0) {
         let disArr = [...display.value];
         disArr.pop();
         display.value = `${disArr.join('')}`;
-    }    
+    }  
+ 
 }
 
 
@@ -337,8 +305,7 @@ const backSpace = (e) => {
 
 // - - - - - - - - - - - - - - - - - - - -
 // event listeners
-
-// buttons
+// - buttons
 const numBtns = [...document.querySelectorAll('form :nth-child(n+3) > button:not(.operator)')];
 numBtns.forEach(button => button.addEventListener('click', makeNumber));
 
@@ -357,8 +324,12 @@ invertBtn.addEventListener('click', invertTotal);
 const delBtn = document.getElementById('delete');
 delBtn.addEventListener('click', backSpace);
 
-
-// keys
-window.addEventListener('keydown', makeNumber);
-// window.addEventListener('keydown', backSpace);
+// - keyboard input
+// - keydown has more stable implementation
+// - using keypress works for character producing keys, but not for backspace, and not in combination
+document.addEventListener('keydown', makeNumber);
+document.addEventListener('keydown', backSpace);
+document.addEventListener('keydown', getTotal);
+document.addEventListener('keydown', performOperation);
+document.addEventListener('keydown', clearCalc);
 
